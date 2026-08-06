@@ -1,0 +1,223 @@
+.ap-wrap {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 28px 20px 60px;
+}
+
+.ap-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ap-header h1 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.ap-load-badge {
+  font-size: 13px;
+  background: var(--gray-bg);
+  border: 1px solid var(--line);
+  padding: 6px 12px;
+  border-radius: 20px;
+  color: var(--dim);
+}
+
+.ap-load-badge strong {
+  color: var(--ink);
+}
+
+.ap-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 800px) {
+  .ap-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ap-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.ap-card h2 {
+  font-size: 14px;
+  margin: 0 0 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--dim);
+}
+
+.ap-card label {
+  font-size: 12px;
+  color: var(--dim);
+  display: block;
+  margin: 12px 0 4px;
+}
+
+.ap-card input[type="text"] {
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.ap-item-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+  align-items: center;
+}
+
+.ap-item-row input {
+  flex: 1;
+}
+
+.ap-item-row select {
+  padding: 9px 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.ap-item-row button {
+  background: var(--gray-bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  width: 32px;
+  height: 36px;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--dim);
+}
+
+.ap-add-item {
+  margin-top: 10px;
+  background: none;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  width: 100%;
+  padding: 8px;
+  font-size: 13px;
+  color: var(--dim);
+  cursor: pointer;
+}
+
+.ap-submit-btn {
+  margin-top: 16px;
+  width: 100%;
+  background: var(--ink);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 11px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.ap-result {
+  margin-top: 12px;
+  font-size: 13px;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.ap-result.ok {
+  background: var(--green-bg);
+  color: var(--green);
+}
+
+.ap-result.err {
+  background: #fbe7e7;
+  color: #b23a3a;
+}
+
+.ap-card table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.ap-card th,
+.ap-card td {
+  text-align: left;
+  padding: 9px 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.ap-card th {
+  color: var(--dim);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ap-token {
+  font-family: "Share Tech Mono", monospace;
+  font-size: 15px;
+  letter-spacing: 1px;
+}
+
+.ap-badge {
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.ap-badge.Waiting {
+  background: var(--gray-bg);
+  color: var(--dim);
+}
+
+.ap-badge.Preparing {
+  background: var(--amber2-bg);
+  color: var(--amber2);
+}
+
+.ap-badge.Ready {
+  background: var(--green-bg);
+  color: var(--green);
+}
+
+.ap-badge.Collected {
+  background: var(--blue-bg);
+  color: var(--blue);
+}
+
+.ap-card td button {
+  border: none;
+  background: var(--ink);
+  color: #fff;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.ap-card td button:disabled {
+  background: #c9cfcb;
+  cursor: default;
+}
+
+.ap-empty-row td {
+  color: var(--dim);
+  text-align: center;
+  padding: 24px;
+}

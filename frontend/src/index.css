@@ -1,0 +1,60 @@
+:root {
+  --board-bg: #121613;
+  --panel-bg: #1c231f;
+  --panel-line: #2b332e;
+  --amber: #ffb020;
+  --amber-dim: #8a5f16;
+  --ready-green: #34d399;
+  --text-dim: #7d8a84;
+  --text-bright: #eef2ef;
+
+  --paper: #f4f6f5;
+  --panel: #ffffff;
+  --line: #e2e6e4;
+  --ink: #12201a;
+  --dim: #657069;
+  --amber2: #c67a12;
+  --amber2-bg: #fbeed9;
+  --green: #0f9d63;
+  --green-bg: #e2f7ee;
+  --blue: #2563a8;
+  --blue-bg: #e5eefa;
+  --gray-bg: #eef1ef;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", system-ui, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: #14181a;
+  color: #eef2ef;
+}
+
+.brand {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.nav-links a {
+  color: #9aa39d;
+  text-decoration: none;
+  font-size: 14px;
+  margin-left: 20px;
+}
+
+.nav-links a.active,
+.nav-links a:hover {
+  color: var(--amber);
+}
