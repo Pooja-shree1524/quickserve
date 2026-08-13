@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-cream text-ink font-body;
+}
+
+h1, h2, h3, .font-display {
+  font-family: 'Fraunces', serif;
+}
+
+/* Perforated ticket edge used on the token / tracking card - the app's signature element */
+.token-stub {
+  position: relative;
+  background: #fff;
+  border-radius: 4px;
+}
+
+.token-stub::before,
+.token-stub::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 24px;
+  height: 24px;
+  background: #FBF8F1;
+  border-radius: 50%;
+  transform: translateY(-50%);
+}
+.token-stub::before { left: -12px; }
+.token-stub::after { right: -12px; }
+
+.dashed-divider {
+  border-top: 2px dashed #D8CFB8;
+}

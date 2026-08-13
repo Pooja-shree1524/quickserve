@@ -1,0 +1,40 @@
+{
+  "info": {
+    "name": "QuickServe AI Prediction Module",
+    "description": "Requests for testing the Waiting Time, Crowd Prediction, and Recommendation endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Predict Waiting Time",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "http://127.0.0.1:8000/predictWaitingTime", "host": ["127.0.0.1"], "port": "8000", "path": ["predictWaitingTime"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"current_orders\": 12,\n  \"number_of_items\": 3,\n  \"preparation_time\": 10,\n  \"kitchen_load\": 65\n}"
+        }
+      }
+    },
+    {
+      "name": "Predict Crowd",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "http://127.0.0.1:8000/predictCrowd", "host": ["127.0.0.1"], "port": "8000", "path": ["predictCrowd"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"date\": \"2026-08-10\",\n  \"time\": \"13:00\",\n  \"previous_orders\": 45\n}"
+        }
+      }
+    },
+    {
+      "name": "Get Recommendation",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "http://127.0.0.1:8000/recommendation", "host": ["127.0.0.1"], "port": "8000", "path": ["recommendation"] }
+      }
+    }
+  ]
+}
