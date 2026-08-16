@@ -1,14 +1,16 @@
 import React from 'react';
 import {
   LayoutGrid, UtensilsCrossed, ClipboardList, Users, BarChart3,
-  Brain, LogOut,
+  Brain, LogOut, ChefHat, Tv, ArrowLeft,
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 const NAV_ITEMS = [
   { key: 'dashboard', label: 'Dashboard', icon: LayoutGrid },
-  { key: 'food', label: 'Food Management', icon: UtensilsCrossed },
+  { key: 'kitchen', label: 'Kitchen & Tokens', icon: ChefHat },
   { key: 'orders', label: 'Order Management', icon: ClipboardList },
+  { key: 'food', label: 'Food Management', icon: UtensilsCrossed },
   { key: 'users', label: 'User Management', icon: Users },
   { key: 'analytics', label: 'Analytics', icon: BarChart3 },
   { key: 'ai', label: 'AI Dashboard', icon: Brain },
@@ -46,6 +48,24 @@ export default function AdminLayout({ active, onNavigate, children }) {
             );
           })}
         </nav>
+
+        <div className="p-3 border-t border-slate-800 space-y-1">
+          <Link
+            to="/queue"
+            target="_blank"
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-sm text-xs font-medium text-slate-400 hover:bg-slate-800 hover:text-amber-400 transition-colors"
+          >
+            <Tv size={15} />
+            Open Live Queue Display ↗
+          </Link>
+          <Link
+            to="/"
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-sm text-xs font-medium text-slate-400 hover:bg-slate-800 hover:text-slate-50 transition-colors"
+          >
+            <ArrowLeft size={15} />
+            Back to Website
+          </Link>
+        </div>
 
         <div className="p-3 border-t border-slate-800">
           <div className="px-3 py-2 mb-1">

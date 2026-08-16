@@ -40,15 +40,19 @@ public class OrderService {
                 .totalAmount(total)
                 .status(Orders.OrderStatus.PLACED)
                 .pickupTime(request.getPickupTime())
+                .token("T" + (100 + (System.currentTimeMillis() % 90000)))
                 .build();
 
         for (CartItem cartItem : cart.getItems()) {
+            BigDecimal price = cartItem.getFood().getPrice();
+            int qty = cartItem.getQuantity();
             OrderItem orderItem = OrderItem.builder()
                     .order(order)
                     .food(cartItem.getFood())
                     .foodNameSnapshot(cartItem.getFood().getName())
-                    .priceSnapshot(cartItem.getFood().getPrice())
-                    .quantity(cartItem.getQuantity())
+                    .priceSnapshot(price)
+                    .quantity(qty)
+                    .lineTotal(price.multiply(BigDecimal.valueOf(qty)))
                     .build();
             order.getItems().add(orderItem);
         }

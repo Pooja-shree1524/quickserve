@@ -52,23 +52,28 @@ public class AdminOrderController {
         // Synchronize token status if token exists
         if (updated.getToken() != null) {
             try {
-                com.quickserve.tokenqueue.entity.TokenStatus targetStatus = null;
-                switch (request.getStatus()) {
-                    case ACCEPTED:
-                        targetStatus = com.quickserve.tokenqueue.entity.TokenStatus.Waiting;
-                        break;
-                    case PREPARING:
-                        targetStatus = com.quickserve.tokenqueue.entity.TokenStatus.Preparing;
-                        break;
-                    case READY:
-                        targetStatus = com.quickserve.tokenqueue.entity.TokenStatus.Ready;
-                        break;
-                    case COLLECTED:
-                        targetStatus = com.quickserve.tokenqueue.entity.TokenStatus.Collected;
-                        break;
-                }
-                if (targetStatus != null) {
-                    tokenService.updateStatus(updated.getToken(), targetStatus);
+                if (request.getStatus() == Orders.OrderStatus.CANCELLED) {
+                    tokenService.cancelToken(updated.getToken());
+                } else {
+                    com.quickserve.tokenqueue.entity.TokenStatus targetStatus = null;
+                    switch (request.getStatus()) {
+                        case PLACED:
+                        case ACCEPTED:
+                            targetStatus = com.quickserve.tokenqueue.entity.TokenStatus.Waiting;
+                            break;
+                        case PREPARING:
+                            targetStatus = com.quickserve.tokenqueue.entity.TokenStatus.Preparing;
+                            break;
+                        case READY:
+                            targetStatus = com.quickserve.tokenqueue.entity.TokenStatus.Ready;
+                            break;
+                        case COLLECTED:
+                            targetStatus = com.quickserve.tokenqueue.entity.TokenStatus.Collected;
+                            break;
+                    }
+                    if (targetStatus != null) {
+                        tokenService.forceUpdateStatus(updated.getToken(), targetStatus);
+                    }
                 }
             } catch (Exception ignored) {}
         }

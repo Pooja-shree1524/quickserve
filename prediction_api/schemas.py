@@ -24,6 +24,8 @@ class WaitingTimeRequest(BaseModel):
 
 class WaitingTimeResponse(BaseModel):
     estimated_waiting_time_minutes: float
+    predicted_waiting_time: float = 0.0
+    unit: str = "minutes"
     message: str
 
 

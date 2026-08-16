@@ -1,26 +1,12 @@
-"""
-QuickServe - Waiting Time Prediction: Model Training
-=====================================================
-Trains three candidate regression models (as listed in the tech spec):
-    - Linear Regression
-    - Decision Tree Regressor
-    - Random Forest Regressor
-
-Evaluates each on a held-out test split using MAE / RMSE / R2, prints a
-comparison table, and saves the best-performing model to
-`models/waiting_time_model.pkl` using joblib so the prediction API can load
-it directly.
-"""
-
 import os
 import joblib
 import numpy as np
 import pandas as pd
 
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, Ridge
 from sklearn.tree import DecisionTreeRegressor
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -51,34 +37,55 @@ def main():
 
     candidates = {
         "Linear Regression": LinearRegression(),
+        "Ridge Regression": Ridge(alpha=1.0),
         "Decision Tree": DecisionTreeRegressor(max_depth=8, random_state=42),
         "Random Forest": RandomForestRegressor(
             n_estimators=200, max_depth=10, random_state=42, n_jobs=-1
+        ),
+        "Gradient Boosting": GradientBoostingRegressor(
+            n_estimators=150, max_depth=5, learning_rate=0.08, random_state=42
         ),
     }
 
     results = []
     trained_models = {}
 
+    print(f"{'Model':<22} | {'MAE (min)':<10} | {'RMSE (min)':<10} | {'R2 Score':<10}")
+    print("-" * 60)
+
     for name, model in candidates.items():
         model.fit(X_train, y_train)
         mae, rmse, r2 = evaluate(model, X_test, y_test)
         results.append((name, mae, rmse, r2))
         trained_models[name] = model
-        print(f"{name:18s} | MAE: {mae:6.3f} | RMSE: {rmse:6.3f} | R2: {r2:6.4f}")
+        print(f"{name:<22} | {mae:<10.4f} | {rmse:<10.4f} | {r2:<10.4f}")
 
-    # Pick best model by lowest RMSE
+    # Pick best model by lowest RMSE / highest R2
     best_name = min(results, key=lambda r: r[2])[0]
     best_model = trained_models[best_name]
-    print(f"\nBest model: {best_name} -> saving to {MODEL_PATH}")
+    best_result = next(r for r in results if r[0] == best_name)
+
+    print("-" * 60)
+    print(f"Selected Best Model: {best_name}")
+    print(f"  - MAE:  {best_result[1]:.4f} minutes")
+    print(f"  - RMSE: {best_result[2]:.4f} minutes")
+    print(f"  - R2:   {best_result[3]:.4f}")
 
     os.makedirs(os.path.dirname(MODEL_PATH), exist_ok=True)
     joblib.dump(
-        {"model": best_model, "features": FEATURES, "model_name": best_name},
+        {
+            "model": best_model,
+            "features": FEATURES,
+            "model_name": best_name,
+            "mae": best_result[1],
+            "rmse": best_result[2],
+            "r2": best_result[3],
+        },
         MODEL_PATH,
     )
-    print("Saved successfully.")
+    print(f"Model saved successfully to {MODEL_PATH}")
 
 
 if __name__ == "__main__":
     main()
+

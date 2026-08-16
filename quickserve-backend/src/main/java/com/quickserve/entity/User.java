@@ -37,6 +37,7 @@ public class User {
     @Builder.Default
     private Role role = Role.CUSTOMER;
 
+    @Column(name = "blocked", nullable = false)
     @Builder.Default
     private Boolean isBlocked = false;
 

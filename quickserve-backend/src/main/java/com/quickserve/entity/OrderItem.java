@@ -35,4 +35,7 @@ public class OrderItem {
     private BigDecimal priceSnapshot;
 
     private Integer quantity;
+
+    @Column(name = "line_total")
+    private BigDecimal lineTotal;
 }

@@ -94,6 +94,7 @@ def root():
 # Feature 1: Waiting Time Prediction
 # ---------------------------------------------------------------------------
 @app.post("/predictWaitingTime", response_model=WaitingTimeResponse)
+@app.post("/predict/waiting-time", response_model=WaitingTimeResponse)
 def predict_waiting_time(request: WaitingTimeRequest):
     if waiting_time_bundle is None:
         raise HTTPException(status_code=503, detail="Model not loaded yet.")
@@ -113,6 +114,8 @@ def predict_waiting_time(request: WaitingTimeRequest):
 
     return WaitingTimeResponse(
         estimated_waiting_time_minutes=prediction,
+        predicted_waiting_time=prediction,
+        unit="minutes",
         message=f"Estimated Waiting Time: {prediction} minutes",
     )
 

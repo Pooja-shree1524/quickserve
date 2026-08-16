@@ -66,9 +66,13 @@ public class AiPredictionClient {
             Map<String, Object> response = restTemplate.postForObject(
                     baseUrl + "/predictWaitingTime", body, Map.class);
 
-            if (response != null && response.get("estimated_waiting_time_minutes") != null) {
-                double waitTime = ((Number) response.get("estimated_waiting_time_minutes")).doubleValue();
-                return Optional.of((int) Math.round(waitTime));
+            if (response != null) {
+                Object val = response.get("estimated_waiting_time_minutes") != null ?
+                        response.get("estimated_waiting_time_minutes") : response.get("predicted_waiting_time");
+                if (val != null) {
+                    double waitTime = ((Number) val).doubleValue();
+                    return Optional.of(Math.max(1, (int) Math.round(waitTime)));
+                }
             }
             return Optional.empty();
         } catch (RestClientException ex) {

@@ -6,11 +6,13 @@ import OrderManagement from '../components/admin/OrderManagement';
 import UserManagement from '../components/admin/UserManagement';
 import Analytics from '../components/admin/Analytics';
 import AIDashboard from '../components/admin/AIDashboard';
+import KitchenPanel from './AdminPanel';
 
 const SECTIONS = {
   dashboard: DashboardCards,
-  food: FoodManagement,
+  kitchen: KitchenPanel,
   orders: OrderManagement,
+  food: FoodManagement,
   users: UserManagement,
   analytics: Analytics,
   ai: AIDashboard,

@@ -24,8 +24,8 @@ public class Orders {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** Human readable token shown to the customer, e.g. QS-1042 */
-    @Column(unique = true, nullable = true)
+    /** Human readable token shown to the customer, e.g. A101 */
+    @Column(name = "token_number", unique = true, nullable = false)
     private String token;
 
     @ManyToOne
@@ -53,6 +53,20 @@ public class Orders {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     private LocalDateTime updatedAt;
+
+    public Integer getPredictedWaitingTime() {
+        return this.estimatedWaitMinutes;
+    }
+
+    public LocalDateTime getEstimatedCollectionTime() {
+        if (this.pickupTime != null) {
+            return this.pickupTime;
+        }
+        if (this.createdAt != null && this.estimatedWaitMinutes != null) {
+            return this.createdAt.plusMinutes(this.estimatedWaitMinutes);
+        }
+        return null;
+    }
 
     public enum OrderStatus {
         PLACED, ACCEPTED, PREPARING, READY, COLLECTED, CANCELLED

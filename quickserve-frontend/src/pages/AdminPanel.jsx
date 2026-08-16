@@ -157,6 +157,19 @@ export default function KitchenPanel() {
                 AI: {crowdInfo.crowd_level || 'LOW'} crowd
               </div>
             )}
+
+            <button
+              onClick={() => navigate('/admin/dashboard')}
+              className="text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white px-3 py-1.5 rounded-lg transition-colors"
+            >
+              ⚙ Admin Dashboard
+            </button>
+            <button
+              onClick={() => window.open('/queue', '_blank')}
+              className="text-xs font-semibold bg-amber-400 hover:bg-amber-300 text-slate-900 px-3 py-1.5 rounded-lg transition-colors"
+            >
+              Live Board ↗
+            </button>
           </div>
         </div>
 
@@ -236,7 +249,11 @@ export default function KitchenPanel() {
                       <tr key={t.tokenNumber} className="border-t border-slate-100 hover:bg-slate-50/50 transition-colors">
                         <td className="px-5 py-3 font-mono font-bold text-slate-900 tracking-wide">{t.tokenNumber}</td>
                         <td className="px-5 py-3 text-slate-700">{t.customerName}</td>
-                        <td className="px-5 py-3 text-slate-500">{t.totalComplexity ?? '—'}</td>
+                        <td className="px-5 py-3 text-slate-700">
+                          {Array.isArray(t.items) && t.items.length > 0
+                            ? t.items.map(i => (typeof i === 'string' ? i : i.name)).filter(Boolean).join(', ')
+                            : '—'}
+                        </td>
                         <td className="px-5 py-3 text-slate-700">{t.estimatedPrepTime ?? '—'}</td>
                         <td className="px-5 py-3">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${STATUS_STYLE[t.status] || 'bg-gray-100 text-gray-600'}`}>

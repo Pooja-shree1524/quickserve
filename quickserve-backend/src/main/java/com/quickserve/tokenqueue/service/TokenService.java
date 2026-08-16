@@ -60,6 +60,7 @@ public class TokenService {
         token.setTotalComplexity(queueAlgorithmService.sumComplexity(items));
         token.setEstimatedPrepTime(queueAlgorithmService.resolvePrepTime(items, kitchenLoad));
         token.setStatus(TokenStatus.Waiting);
+        token.setTokenNumber("T" + (100 + (System.currentTimeMillis() % 90000)));
 
         Token saved = tokenRepository.save(token);
         saved.setTokenNumber("A" + (100 + saved.getId()));
@@ -101,6 +102,7 @@ public class TokenService {
         token.setTotalComplexity(queueAlgorithmService.sumComplexity(itemDtos));
         token.setEstimatedPrepTime(queueAlgorithmService.resolvePrepTime(itemDtos, kitchenLoad));
         token.setStatus(TokenStatus.Waiting);
+        token.setTokenNumber("T" + (100 + (System.currentTimeMillis() % 90000)));
 
         Token saved = tokenRepository.save(token);
         saved.setTokenNumber("A" + (100 + saved.getId()));
@@ -152,6 +154,46 @@ public class TokenService {
         syncOrderStatus(saved);
 
         return TokenResponse.from(saved);
+    }
+
+    /** Direct status update without strict step enforcement (used by Admin/OrderService synchronization). */
+    @Transactional
+    public Token forceUpdateStatus(String tokenNumber, TokenStatus newStatus) {
+        Optional<Token> tokenOpt = tokenRepository.findByTokenNumber(tokenNumber);
+        if (tokenOpt.isEmpty()) return null;
+
+        Token token = tokenOpt.get();
+        if (token.getStatus() == newStatus) {
+            return token;
+        }
+
+        token.setStatus(newStatus);
+        if (newStatus == TokenStatus.Ready) {
+            token.setReadyAt(LocalDateTime.now());
+        }
+        if (newStatus == TokenStatus.Collected) {
+            token.setCollectedAt(LocalDateTime.now());
+            token.setQueuePosition(null);
+        }
+        if (newStatus == TokenStatus.Preparing) {
+            token.setQueuePosition(null);
+        }
+
+        Token saved = tokenRepository.save(token);
+        queueAlgorithmService.recalculateQueue();
+        return saved;
+    }
+
+    @Transactional
+    public void cancelToken(String tokenNumber) {
+        Optional<Token> tokenOpt = tokenRepository.findByTokenNumber(tokenNumber);
+        if (tokenOpt.isPresent()) {
+            Token token = tokenOpt.get();
+            token.setStatus(TokenStatus.Collected);
+            token.setQueuePosition(null);
+            tokenRepository.save(token);
+            queueAlgorithmService.recalculateQueue();
+        }
     }
 
     private void syncOrderStatus(Token token) {
