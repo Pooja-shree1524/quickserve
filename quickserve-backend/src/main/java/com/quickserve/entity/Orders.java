@@ -49,10 +49,27 @@ public class Orders {
     /** AI-estimated waiting time in minutes, computed at order placement */
     private Integer estimatedWaitMinutes;
 
+    // ── QR / Pickup-pass fields (populated after successful payment) ─────────
+
+    /** Cryptographically-random token stored in the QR code. UNIQUE per order. */
+    @Column(name = "pickup_qr_token", unique = true)
+    private String pickupQrToken;
+
+    /** 4-digit numeric PIN shown to the student on their pickup pass. */
+    @Column(name = "pickup_pin", length = 4)
+    private String pickupPin;
+
+    /** Timestamp when the order was physically collected by the student. */
+    @Column(name = "collected_at")
+    private LocalDateTime collectedAt;
+
+    // ────────────────────────────────────────────────────────────────────────
+
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
     private LocalDateTime updatedAt;
+
 
     public Integer getPredictedWaitingTime() {
         return this.estimatedWaitMinutes;

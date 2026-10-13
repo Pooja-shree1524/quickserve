@@ -30,7 +30,11 @@ public class Payment {
     /** DUMMY or RAZORPAY */
     private String method;
 
+    /** Razorpay payment ID (rzp_payment_XXX) or dummy UUID */
     private String transactionRef;
+
+    /** Razorpay order ID (order_XXXX) – populated for RAZORPAY payments */
+    private String razorpayOrderId;
 
     @Enumerated(EnumType.STRING)
     @Builder.Default

@@ -7,6 +7,7 @@ import UserManagement from '../components/admin/UserManagement';
 import Analytics from '../components/admin/Analytics';
 import AIDashboard from '../components/admin/AIDashboard';
 import KitchenPanel from './AdminPanel';
+import PickupVerification from '../components/admin/PickupVerification';
 
 const SECTIONS = {
   dashboard: DashboardCards,
@@ -16,6 +17,7 @@ const SECTIONS = {
   users: UserManagement,
   analytics: Analytics,
   ai: AIDashboard,
+  pickup: PickupVerification,
 };
 
 export default function AdminDashboardPage() {

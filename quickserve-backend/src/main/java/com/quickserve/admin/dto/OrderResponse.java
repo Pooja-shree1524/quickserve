@@ -22,5 +22,9 @@ public class OrderResponse {
     private BigDecimal totalAmount;
     private OrderStatus status;
     private Integer estimatedWaitMinutes;
+    /** Payment status: SUCCESS, PENDING, FAILED, or DUMMY */
+    private String paymentStatus;
+    /** Estimated pickup time = createdAt + estimatedWaitMinutes */
+    private LocalDateTime estimatedPickupTime;
     private LocalDateTime createdAt;
 }

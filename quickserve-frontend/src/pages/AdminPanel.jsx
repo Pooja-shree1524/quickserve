@@ -35,6 +35,18 @@ const CROWD_STYLE = {
   HIGH:     'bg-red-100 text-red-800',
 }
 
+/** Compute pickup ETA: token.createdAt + estimatedPrepTime minutes */
+function getPickupEta(token) {
+  if (!token.createdAt || !token.estimatedPrepTime) return '—'
+  try {
+    const created = new Date(token.createdAt)
+    const eta = new Date(created.getTime() + token.estimatedPrepTime * 60000)
+    return eta.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  } catch {
+    return '—'
+  }
+}
+
 function emptyItem() { return { name: '', complexity: 2 } }
 
 /* ── component ─────────────────────────────────── */
@@ -238,8 +250,9 @@ export default function KitchenPanel() {
                       <th className="text-left px-5 py-3 font-semibold">Token</th>
                       <th className="text-left px-5 py-3 font-semibold">Customer</th>
                       <th className="text-left px-5 py-3 font-semibold">Items</th>
-                      <th className="text-left px-5 py-3 font-semibold">Prep (min)</th>
+                      <th className="text-left px-5 py-3 font-semibold">AI Wait (min)</th>
                       <th className="text-left px-5 py-3 font-semibold">Status</th>
+                      <th className="text-left px-5 py-3 font-semibold">Pickup ETA</th>
                       <th className="text-left px-5 py-3 font-semibold">Position</th>
                       <th className="text-right px-5 py-3 font-semibold">Action</th>
                     </tr>
@@ -260,6 +273,7 @@ export default function KitchenPanel() {
                             {t.status}
                           </span>
                         </td>
+                        <td className="px-5 py-3 text-slate-700 font-medium">{getPickupEta(t)}</td>
                         <td className="px-5 py-3 text-slate-500">#{t.queuePosition ?? '—'}</td>
                         <td className="px-5 py-3 text-right">
                           {NEXT_STATUS[t.status] ? (

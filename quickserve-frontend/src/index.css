@@ -34,3 +34,28 @@ h1, h2, h3, .font-display {
 .dashed-divider {
   border-top: 2px dashed #D8CFB8;
 }
+
+/* ── html5-qrcode Video Preview ── */
+#qr-reader {
+    width: 100%;
+    max-width: 500px;
+}
+
+#qr-reader video {
+    width: 100% !important;
+    height: auto !important;
+    display: block !important;
+    object-fit: cover !important;
+}
+
+#qr-reader__scan_region {
+    width: 100% !important;
+}
+
+#qr-reader__scan_region video {
+    width: 100% !important;
+    height: auto !important;
+    display: block !important;
+    object-fit: cover !important;
+}
+

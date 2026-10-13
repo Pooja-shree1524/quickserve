@@ -15,6 +15,7 @@ import Profile from './pages/Profile'
 import CustomerQueue from './pages/CustomerQueue'
 import AdminPanel from './pages/AdminPanel'
 import AdminDashboardPage from './pages/AdminDashboardPage'
+import VerifyEmail from './pages/VerifyEmail'
 
 function CustomerShell() {
   return (
@@ -25,6 +26,7 @@ function CustomerShell() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/menu" element={<ProtectedRoute><Menu /></ProtectedRoute>} />
           <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
           <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />

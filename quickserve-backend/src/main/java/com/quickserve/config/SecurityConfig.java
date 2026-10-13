@@ -61,6 +61,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/foods/**").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/orders/verify-pickup", "/api/orders/mark-collected").hasRole("ADMIN")
+                .requestMatchers("/api/payment/**").authenticated()
                 .requestMatchers("/api/queue", "/api/currentToken", "/api/generateToken", "/api/updateStatus", "/api/token/**", "/api/ai/**").permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 .requestMatchers("/actuator/**").permitAll()

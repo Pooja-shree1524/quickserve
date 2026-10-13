@@ -24,6 +24,7 @@ public class OrderService {
     private final AiPredictionService aiPredictionService;
     private final PaymentService paymentService;
     private final TokenService tokenService;
+    private final PickupService pickupService;
 
     @Transactional
     public Orders placeOrder(User user, PlaceOrderRequest request) {
@@ -69,10 +70,65 @@ public class OrderService {
             order.setEstimatedWaitMinutes(token.getEstimatedPrepTime());
             order = ordersRepository.save(order);
 
+            // Generate QR token + 4-digit PIN after successful payment
+            order = pickupService.generateAndSavePickupCredentials(order);
+
             // Order placed & paid - clear the cart
             cartService.clearCart(cart);
         }
 
+        return order;
+    }
+
+    /**
+     * Called by PaymentController ONLY after Razorpay signature is verified.
+     * Creates the order, records payment, generates token, runs AI prediction.
+     */
+    @Transactional
+    public Orders placeOrderAfterRazorpay(User user,
+                                           String razorpayPaymentId,
+                                           String razorpayOrderId,
+                                           java.time.LocalDateTime pickupTime) {
+        Cart cart = cartService.getCartForUser(user);
+        if (cart.getItems().isEmpty()) {
+            throw new BadRequestException("Your cart is empty");
+        }
+        java.math.BigDecimal total = cartService.calculateTotal(cart);
+
+        Orders order = Orders.builder()
+                .user(user)
+                .totalAmount(total)
+                .status(Orders.OrderStatus.PLACED)
+                .pickupTime(pickupTime)
+                .token("T" + (100 + (System.currentTimeMillis() % 90000)))
+                .build();
+
+        for (CartItem cartItem : cart.getItems()) {
+            java.math.BigDecimal price = cartItem.getFood().getPrice();
+            int qty = cartItem.getQuantity();
+            OrderItem orderItem = OrderItem.builder()
+                    .order(order)
+                    .food(cartItem.getFood())
+                    .foodNameSnapshot(cartItem.getFood().getName())
+                    .priceSnapshot(price)
+                    .quantity(qty)
+                    .lineTotal(price.multiply(java.math.BigDecimal.valueOf(qty)))
+                    .build();
+            order.getItems().add(orderItem);
+        }
+
+        order = ordersRepository.save(order);
+        paymentService.recordRazorpayPayment(order, razorpayPaymentId, razorpayOrderId);
+
+        Token token = tokenService.generateTokenForOrder(order);
+        order.setToken(token.getTokenNumber());
+        order.setEstimatedWaitMinutes(token.getEstimatedPrepTime());
+        order = ordersRepository.save(order);
+
+        // Generate QR token + 4-digit PIN after successful Razorpay payment
+        order = pickupService.generateAndSavePickupCredentials(order);
+
+        cartService.clearCart(cart);
         return order;
     }
 

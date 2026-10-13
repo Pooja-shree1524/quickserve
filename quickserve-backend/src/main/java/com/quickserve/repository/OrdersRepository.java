@@ -9,6 +9,7 @@ import java.util.Optional;
 public interface OrdersRepository extends JpaRepository<Orders, Long> {
     List<Orders> findByUserOrderByCreatedAtDesc(User user);
     Optional<Orders> findByToken(String token);
+    Optional<Orders> findByPickupQrToken(String pickupQrToken);
     long countByCreatedAtAfter(java.time.LocalDateTime after);
 
     List<Orders> findByStatus(Orders.OrderStatus status);

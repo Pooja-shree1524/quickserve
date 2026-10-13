@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { getOrder } from '../services/api'
 import StatusPipeline from '../components/StatusPipeline'
+import { QRCodeSVG } from 'qrcode.react'
 
 export default function OrderTracking() {
   const { id } = useParams()
@@ -141,6 +142,73 @@ export default function OrderTracking() {
           </div>
         ))}
       </div>
+
+      {/* ── PICKUP PASS (QR + PIN) — shown only when order has a QR token ── */}
+      {order.pickupQrToken && (
+        <div className="mt-8 bg-white border-2 border-dashed border-leaf/40 rounded-3xl overflow-hidden shadow-sm">
+          {/* Header */}
+          <div className="bg-leaf/10 px-6 py-4 flex items-center justify-between border-b border-leaf/20">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-widest text-leaf">🎫 Pickup Pass</p>
+              <p className="text-ink/60 text-xs mt-0.5">Show this to the canteen staff when collecting your order</p>
+            </div>
+            {order.status === 'COLLECTED' && (
+              <span className="bg-gray-100 text-gray-500 text-xs font-bold px-3 py-1 rounded-full">✓ Used</span>
+            )}
+          </div>
+
+          <div className="p-6 flex flex-col sm:flex-row gap-6 items-center">
+            {/* QR Code */}
+            <div className="flex flex-col items-center gap-2 shrink-0">
+              <div className={`p-3 bg-white border border-mist rounded-xl shadow-sm ${order.status === 'COLLECTED' ? 'opacity-40 grayscale' : ''}`}>
+                <QRCodeSVG
+                  value={order.pickupQrToken}
+                  size={160}
+                  level="H"
+                  includeMargin={false}
+                />
+              </div>
+              <p className="text-xs text-ink/40 font-mono">Scan at canteen</p>
+            </div>
+
+            {/* Divider */}
+            <div className="hidden sm:block w-px self-stretch bg-mist" />
+            <div className="block sm:hidden h-px w-full bg-mist" />
+
+            {/* Details */}
+            <div className="flex-1 space-y-4 w-full">
+              {/* PIN */}
+              <div className="bg-amber-50 border border-amber-200 rounded-xl px-5 py-4 text-center">
+                <p className="text-xs font-bold uppercase tracking-widest text-amber-600 mb-1">4-Digit Pickup PIN</p>
+                <p className={`font-mono text-4xl font-black tracking-[0.3em] ${order.status === 'COLLECTED' ? 'text-gray-400' : 'text-slate-900'}`}>
+                  {order.pickupPin}
+                </p>
+                {order.status !== 'COLLECTED' && (
+                  <p className="text-xs text-amber-700 mt-1">Tell this PIN to the staff when handing over</p>
+                )}
+              </div>
+
+              {/* Order mini-summary */}
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div className="bg-mist/30 rounded-lg px-3 py-2">
+                  <p className="text-xs text-ink/50 uppercase font-semibold">Token</p>
+                  <p className="font-mono font-bold text-clay text-lg mt-0.5">{order.token}</p>
+                </div>
+                <div className="bg-mist/30 rounded-lg px-3 py-2">
+                  <p className="text-xs text-ink/50 uppercase font-semibold">Amount Paid</p>
+                  <p className="font-bold text-ink text-lg mt-0.5">₹{Number(order.totalAmount).toFixed(0)}</p>
+                </div>
+              </div>
+
+              {order.status === 'COLLECTED' && (
+                <div className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-center">
+                  <p className="text-gray-500 text-sm font-medium">✓ Order collected — this pass is no longer valid</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

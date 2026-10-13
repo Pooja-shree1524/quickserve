@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { resendVerificationEmail } from '../services/api'
 
 export default function Login() {
   const { login, logout } = useAuth()
@@ -9,12 +10,18 @@ export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [showResend, setShowResend] = useState(false)
+  const [resendLoading, setResendLoading] = useState(false)
+  const [resendMessage, setResendMessage] = useState('')
+  const [resendSuccess, setResendSuccess] = useState(false)
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    setShowResend(false)
+    setResendMessage('')
     setLoading(true)
     try {
       const authData = await login(form)
@@ -30,9 +37,34 @@ export default function Login() {
         navigate('/menu')
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Invalid email or password.')
+      const msg = err.response?.data?.message || 'Invalid email or password.'
+      setError(msg)
+      if (loginType === 'STUDENT' && typeof msg === 'string' && msg.toLowerCase().includes('verify your email')) {
+        setShowResend(true)
+      }
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleResend = async (e) => {
+    e.preventDefault()
+    setResendMessage('')
+    setResendSuccess(false)
+    if (!form.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      setResendMessage('Please enter a valid email address above first.')
+      return
+    }
+    setResendLoading(true)
+    try {
+      const res = await resendVerificationEmail({ email: form.email })
+      setResendSuccess(true)
+      setResendMessage(res.data?.message || 'If the email matches an unverified account, a new verification link has been sent.')
+    } catch (err) {
+      setResendSuccess(false)
+      setResendMessage(err.response?.data?.message || 'Something went wrong. Please try again later.')
+    } finally {
+      setResendLoading(false)
     }
   }
 
@@ -114,6 +146,31 @@ export default function Login() {
           {loading ? 'Logging in…' : `Log in as ${loginType === 'ADMIN' ? 'Admin' : 'Student'}`}
         </button>
       </form>
+
+      {showResend && (
+        <div className="mt-5 border border-leaf/20 bg-leaf/5 rounded-xl p-4 space-y-3">
+          <p className="text-sm text-ink/80 font-medium">
+            Your account is not verified yet.
+          </p>
+          {resendMessage && (
+            <div
+              className={`text-sm rounded-lg px-3 py-2 ${
+                resendSuccess ? 'bg-leaf/10 text-leaf' : 'bg-clay/10 text-clay'
+              }`}
+            >
+              {resendMessage}
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={handleResend}
+            disabled={resendLoading}
+            className="w-full text-sm font-medium text-clay hover:underline disabled:opacity-50"
+          >
+            {resendLoading ? 'Sending…' : 'Resend verification email'}
+          </button>
+        </div>
+      )}
 
       {loginType === 'STUDENT' && (
         <p className="text-sm text-ink/60 mt-6 text-center">

@@ -29,7 +29,7 @@ export function AuthProvider({ children }) {
 
   const register = useCallback(async (details) => {
     const res = await registerUser(details)
-    persist(res.data)
+    // Do NOT persist: user must verify email before they can log in
     return res.data
   }, [])
 

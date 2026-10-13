@@ -31,10 +31,13 @@ api.interceptors.response.use(
 // ---------- Auth ----------
 export const registerUser = (data) => api.post('/auth/register', data)
 export const loginUser = (data) => api.post('/auth/login', data)
+export const verifyEmailToken = (token) => api.get('/auth/verify-email', { params: { token } })
+export const resendVerificationEmail = (data) => api.post('/auth/resend-verification', data)
 
 // ---------- Profile ----------
 export const getProfile = () => api.get('/users/me')
 export const updateProfile = (data) => api.put('/users/me', data)
+export const deleteAccount = () => api.delete('/users/me')
 
 // ---------- Menu ----------
 export const getFoods = (params) => api.get('/foods', { params })
@@ -52,6 +55,14 @@ export const placeOrder = (data) => api.post('/order', data)
 export const getOrders = () => api.get('/orders')
 export const getOrder = (id) => api.get(`/orders/${id}`)
 export const trackOrder = (id) => api.get(`/track/${id}`)
+
+// ---------- Razorpay ----------
+/** Step 1: Create a Razorpay order object and get the order ID + key */
+export const createRazorpayOrder = (amount) =>
+  api.post('/payment/create-order', { amount }).then(r => r.data)
+/** Step 2: Verify signature on backend, which creates the QuickServe order + token */
+export const verifyRazorpayPayment = (data) =>
+  api.post('/payment/verify', data)
 
 // ---------- Token & Queue ----------
 export const generateToken = (payload) => api.post('/generateToken', payload).then(r => r.data)
@@ -74,5 +85,11 @@ export const getAdminUsers = () => api.get('/admin/users').then(r => r.data)
 export const blockUser = (id) => api.put(`/admin/users/${id}/block`).then(r => r.data)
 export const unblockUser = (id) => api.put(`/admin/users/${id}/unblock`).then(r => r.data)
 export const getAdminAnalytics = () => api.get('/admin/analytics').then(r => r.data)
+
+// ---------- Pickup QR Verification (Admin) ----------
+/** Step 1: Verify QR token + PIN — returns order summary without changing status */
+export const verifyPickup = (data) => api.post('/orders/verify-pickup', data)
+/** Step 2: Final re-verify + mark order as COLLECTED atomically */
+export const markCollected = (data) => api.post('/orders/mark-collected', data)
 
 export default api

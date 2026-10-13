@@ -1,19 +1,20 @@
 import React from 'react';
 import {
   LayoutGrid, UtensilsCrossed, ClipboardList, Users, BarChart3,
-  Brain, LogOut, ChefHat, Tv, ArrowLeft,
+  Brain, LogOut, ChefHat, Tv, ArrowLeft, QrCode,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 const NAV_ITEMS = [
-  { key: 'dashboard', label: 'Dashboard', icon: LayoutGrid },
-  { key: 'kitchen', label: 'Kitchen & Tokens', icon: ChefHat },
-  { key: 'orders', label: 'Order Management', icon: ClipboardList },
-  { key: 'food', label: 'Food Management', icon: UtensilsCrossed },
-  { key: 'users', label: 'User Management', icon: Users },
-  { key: 'analytics', label: 'Analytics', icon: BarChart3 },
-  { key: 'ai', label: 'AI Dashboard', icon: Brain },
+  { key: 'dashboard', label: 'Dashboard',           icon: LayoutGrid },
+  { key: 'kitchen',   label: 'Kitchen & Tokens',    icon: ChefHat },
+  { key: 'pickup',    label: 'Pickup Verification', icon: QrCode },
+  { key: 'orders',    label: 'Order History',        icon: ClipboardList },
+  { key: 'food',      label: 'Food Management',      icon: UtensilsCrossed },
+  { key: 'users',     label: 'User Management',      icon: Users },
+  { key: 'analytics', label: 'Analytics',            icon: BarChart3 },
+  { key: 'ai',        label: 'AI Dashboard',         icon: Brain },
 ];
 
 export default function AdminLayout({ active, onNavigate, children }) {

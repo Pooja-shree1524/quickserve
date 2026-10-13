@@ -4,7 +4,9 @@ import com.quickserve.admin.dto.AiDashboardResponse;
 import com.quickserve.admin.dto.DashboardResponse;
 import com.quickserve.admin.dto.OrderResponse;
 import com.quickserve.entity.Orders;
+import com.quickserve.entity.Payment;
 import com.quickserve.repository.OrdersRepository;
+import com.quickserve.repository.PaymentRepository;
 import com.quickserve.tokenqueue.service.AiPredictionClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,6 +26,7 @@ public class AdminDashboardService {
 
     private final OrdersRepository ordersRepository;
     private final AiPredictionClient aiPredictionClient;
+    private final PaymentRepository paymentRepository;
 
     public DashboardResponse getDashboardSummary() {
         LocalDateTime startOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
@@ -77,7 +81,6 @@ public class AdminDashboardService {
                 activeCount
         );
         String predictedCrowd = (String) crowdRes.getOrDefault("crowd_level", "LOW");
-        // Fallback: if AI returned UNKNOWN, derive crowd level from active kitchen orders
         if ("UNKNOWN".equals(predictedCrowd)) {
             if (activeCount <= 5) predictedCrowd = "LOW";
             else if (activeCount <= 15) predictedCrowd = "MODERATE";
@@ -98,6 +101,23 @@ public class AdminDashboardService {
                 .map(i -> i.getQuantity() + "x " + i.getFoodNameSnapshot())
                 .collect(Collectors.toList());
 
+        // Lookup payment status from payments table
+        // estimatedWaitMinutes = AI-predicted total waiting time (queue wait + preparation combined)
+        // estimatedPickupTime  = order.createdAt + estimatedWaitMinutes (verified)
+        String paymentStatus = "PAID (DUMMY)";
+        Optional<Payment> paymentOpt = paymentRepository.findByOrderId(order.getId());
+        if (paymentOpt.isPresent()) {
+            Payment p = paymentOpt.get();
+            paymentStatus = "RAZORPAY".equals(p.getMethod())
+                    ? p.getStatus().name()   // SUCCESS / PENDING / FAILED
+                    : "PAID (DUMMY)";
+        }
+
+        LocalDateTime estimatedPickupTime = null;
+        if (order.getCreatedAt() != null && order.getEstimatedWaitMinutes() != null) {
+            estimatedPickupTime = order.getCreatedAt().plusMinutes(order.getEstimatedWaitMinutes());
+        }
+
         return OrderResponse.builder()
                 .id(order.getId())
                 .tokenNumber(order.getToken() != null ? order.getToken() : "QS-" + (1000 + order.getId()))
@@ -106,6 +126,8 @@ public class AdminDashboardService {
                 .totalAmount(order.getTotalAmount())
                 .status(order.getStatus())
                 .estimatedWaitMinutes(order.getEstimatedWaitMinutes())
+                .paymentStatus(paymentStatus)
+                .estimatedPickupTime(estimatedPickupTime)
                 .createdAt(order.getCreatedAt())
                 .build();
     }

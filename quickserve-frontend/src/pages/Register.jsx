@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 export default function Register() {
   const { register } = useAuth()
-  const navigate = useNavigate()
   const [form, setForm] = useState({ name: '', email: '', password: '', phone: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [registered, setRegistered] = useState(null) // holds { emailSent, message, email }
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
 
@@ -16,8 +16,8 @@ export default function Register() {
     setError('')
     setLoading(true)
     try {
-      await register(form)
-      navigate('/menu')
+      const data = await register(form)
+      setRegistered({ emailSent: data.emailSent !== false, message: data.message, email: form.email })
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed. Please try again.')
     } finally {
@@ -25,6 +25,43 @@ export default function Register() {
     }
   }
 
+  // ── Post-registration confirmation screen ──────────────────────────────────
+  if (registered) {
+    return (
+      <div className="max-w-md mx-auto px-5 py-20 text-center">
+        <div className={`bg-white rounded-2xl p-8 shadow-sm space-y-5 border ${registered.emailSent ? 'border-leaf/30' : 'border-amber-300'}`}>
+          <div className={`w-14 h-14 rounded-full flex items-center justify-center mx-auto text-2xl font-bold ${registered.emailSent ? 'bg-leaf/10 text-leaf' : 'bg-amber-100 text-amber-600'}`}>
+            {registered.emailSent ? '✓' : '!'}
+          </div>
+          <h1 className="font-display text-2xl text-ink">Account created!</h1>
+          <p className="text-ink/70 text-sm">
+            {registered.emailSent
+              ? <>We've sent a verification link to <strong>{registered.email}</strong>. Please check your inbox (and spam folder) and click the link to activate your account.</>
+              : registered.message
+            }
+          </p>
+          {!registered.emailSent && (
+            <Link
+              to="/verify-email"
+              className="inline-block text-sm text-clay font-medium hover:underline"
+            >
+              Resend verification email →
+            </Link>
+          )}
+          <div className="pt-2">
+            <Link
+              to="/login"
+              className="inline-block w-full bg-ink text-cream rounded-full py-3 font-medium hover:bg-leaf transition-colors"
+            >
+              Go to Login
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // ── Registration form ──────────────────────────────────────────────────────
   return (
     <div className="max-w-md mx-auto px-5 py-16">
       <h1 className="font-display text-3xl text-ink mb-2">Create your account</h1>
